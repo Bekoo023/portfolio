@@ -772,7 +772,7 @@ function Styles() {
   return (
     <style>{`
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@media(prefers-reduced-motion:reduce){
+@media(prefers-reduced-motion:reduce){}
 .bs-root{
   --ink:#070A12;
   --ink-2:#0B1020;
@@ -1075,5 +1075,5 @@ function Styles() {
 }
     `}</style>
   );
-  
+ 
 }
