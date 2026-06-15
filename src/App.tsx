@@ -49,15 +49,17 @@ const projects = [
       "Een AI-gedreven boekhoudapp waarmee ondernemers bonnetjes verwerken, hun administratie automatiseren en realtime overzicht krijgen over hun bedrijf.",
     tech: ["React", "TypeScript", "Tailwind", "AI", "PHP", "MySQL"],
     accent: "var(--accent)",
+    link: "https://smartxx-kohl.vercel.app/",
   },
   {
     title: "GoldStone",
-    label: "Business website",
-    year: "2025",
+    label: "Consultancy website",
+    year: "2026",
     description:
-      "Een professionele website gericht op groei en leadgeneratie. Gebouwd met herbruikbare componenten en heldere conversiesecties.",
+      "Een professionele website voor GoldStone Consulting, gericht op groei en leadgeneratie. Gebouwd met herbruikbare componenten en heldere conversiesecties.",
     tech: ["React", "Tailwind CSS", "UX", "Responsive"],
     accent: "var(--accent-2)",
+    link: "https://goldstoneconsulting.vercel.app/",
   },
   {
     title: "Portfolio",
@@ -67,6 +69,7 @@ const projects = [
       "Deze site. Een plek waar mijn skills, projecten en ambitie als developer samenkomen in één strak, snel geheel.",
     tech: ["Vite", "React", "Tailwind CSS"],
     accent: "var(--grow)",
+    link: "",
   },
 ];
 
@@ -632,38 +635,44 @@ export default function App() {
             </div>
 
             <div className="projects">
-              {projects.map((p, i) => (
-                <article
-                  className="project card"
-                  data-reveal
-                  style={
-                    {
-                      transitionDelay: `${i * 90}ms`,
-                      "--c": p.accent,
-                    } as React.CSSProperties
-                  }
-                  key={p.title}
-                >
-                  <div className="project-top">
-                    <span className="project-no">0{i + 1}</span>
-                    <span className="project-year">{p.year}</span>
-                  </div>
-                  <div className="project-glow" />
-                  <div className="project-body">
-                    <p className="project-label">{p.label}</p>
-                    <h3 className="project-title">
-                      {p.title}
-                      <ArrowUpRight className="project-arrow" size={20} />
-                    </h3>
-                    <p className="project-desc">{p.description}</p>
-                    <div className="chips chips-sm">
-                      {p.tech.map((t) => (
-                        <span key={t}>{t}</span>
-                      ))}
+              {projects.map((p, i) => {
+                const Tag = p.link ? "a" : "article";
+                return (
+                  <Tag
+                    className="project card"
+                    data-reveal
+                    style={
+                      {
+                        transitionDelay: `${i * 90}ms`,
+                        "--c": p.accent,
+                      } as React.CSSProperties
+                    }
+                    key={p.title}
+                    {...(p.link
+                      ? { href: p.link, target: "_blank", rel: "noreferrer" }
+                      : {})}
+                  >
+                    <div className="project-top">
+                      <span className="project-no">0{i + 1}</span>
+                      <span className="project-year">{p.year}</span>
                     </div>
-                  </div>
-                </article>
-              ))}
+                    <div className="project-glow" />
+                    <div className="project-body">
+                      <p className="project-label">{p.label}</p>
+                      <h3 className="project-title">
+                        {p.title}
+                        <ArrowUpRight className="project-arrow" size={20} />
+                      </h3>
+                      <p className="project-desc">{p.description}</p>
+                      <div className="chips chips-sm">
+                        {p.tech.map((t) => (
+                          <span key={t}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </Tag>
+                );
+              })}
             </div>
           </div>
         </section>
