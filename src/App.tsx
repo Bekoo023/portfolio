@@ -178,7 +178,12 @@ type CounterProps = {
   duration?: number;
 };
 
-function Counter({ to, suffix = "", prefix = "", duration = 1400 }: CounterProps) {
+function Counter({
+  to,
+  suffix = "",
+  prefix = "",
+  duration = 1400,
+}: CounterProps) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement | null>(null);
   const done = useRef(false);
@@ -772,7 +777,6 @@ function Styles() {
   return (
     <style>{`
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@media(prefers-reduced-motion:reduce){}
 .bs-root{
   --ink:#070A12;
   --ink-2:#0B1020;
@@ -829,7 +833,7 @@ function Styles() {
   background:linear-gradient(90deg,var(--accent),var(--grow));
   box-shadow:0 0 12px rgba(110,231,249,0.6);
 }
-.bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .orb{position:absolute;width:480px;height:480px;border-radius:50%;filter:blur(130px);opacity:.5;}
 .orb-a{top:-12%;left:-8%;background:rgba(110,231,249,0.22);animation:float 22s ease-in-out infinite;}
 .orb-b{top:24%;right:-10%;background:rgba(183,156,255,0.18);animation:float 26s ease-in-out infinite reverse;}
@@ -896,7 +900,8 @@ function Styles() {
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .hero-title{font-family:'Space Grotesk',sans-serif;font-weight:700;
   letter-spacing:-0.045em;line-height:0.98;margin:22px 0 0;
-  font-size:clamp(38px,7vw,76px);}
+  font-size:clamp(38px,7vw,76px);
+  overflow-wrap:break-word;hyphens:auto;}
 .hero-lead{margin:24px 0 0;max-width:540px;color:var(--muted);
   font-size:clamp(16px,2vw,18.5px);line-height:1.7;}
 .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;}
@@ -1075,5 +1080,4 @@ function Styles() {
 }
     `}</style>
   );
- 
 }
