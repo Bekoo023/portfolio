@@ -24,6 +24,8 @@ const NAV = [
 ];
 
 const EMAIL = "bekir194559@hotmail.com";
+// TODO: vervang door je eigen LinkedIn-profiel-URL
+const LINKEDIN = "https://www.linkedin.com/in/JOUW-PROFIEL";
 
 const skillGroups = [
   {
@@ -115,6 +117,36 @@ const values = [
 /*  HOOKS                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Optimaal laad je de fonts via index.html i.p.v. runtime.
+ * Zet dan deze <link>'s in je <head> en verwijder deze hook:
+ *   <link rel="preconnect" href="https://fonts.googleapis.com">
+ *   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=...">
+ * Deze hook injecteert ze als fallback zodat dit bestand standalone werkt
+ * (met preconnect en non-blocking, i.t.t. de oude @import).
+ */
+function useFonts() {
+  useEffect(() => {
+    if (document.getElementById("bs-fonts")) return;
+    const pre1 = Object.assign(document.createElement("link"), {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com",
+    });
+    const pre2 = Object.assign(document.createElement("link"), {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+    });
+    pre2.crossOrigin = "anonymous";
+    const sheet = Object.assign(document.createElement("link"), {
+      id: "bs-fonts",
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    });
+    document.head.append(pre1, pre2, sheet);
+  }, []);
+}
+
 function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll("[data-reveal]");
@@ -138,19 +170,31 @@ function useReveal() {
   }, []);
 }
 
-function useScrollProgress() {
-  const [p, setP] = useState(0);
+/**
+ * Schrijft de voortgang rechtstreeks naar de DOM via een ref.
+ * Zo veroorzaakt scrollen GEEN re-render van de hele App meer.
+ * rAF-throttled voor soepelheid.
+ */
+function useScrollProgress(ref: React.RefObject<HTMLDivElement | null>) {
   useEffect(() => {
+    let raf = 0;
     const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      setP(max > 0 ? (h.scrollTop / max) * 100 : 0);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        const p = max > 0 ? h.scrollTop / max : 0;
+        if (ref.current) ref.current.style.transform = `scaleX(${p})`;
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return p;
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [ref]);
 }
 
 function useActiveSection() {
@@ -252,7 +296,7 @@ function CompoundCurve() {
   const path = useMemo(() => {
     const n = 64;
     const vals = Array.from({ length: n }, (_, i) =>
-      Math.pow(1.01, (i / (n - 1)) * 200),
+      Math.pow(1.01, (i / (n - 1)) * 365),
     );
     const min = vals[0];
     const max = vals[n - 1];
@@ -379,11 +423,30 @@ function Terminal() {
 /* ------------------------------------------------------------------ */
 
 export default function App() {
+  useFonts();
   useReveal();
-  const progress = useScrollProgress();
   const active = useActiveSection();
+  const progressRef = useRef<HTMLDivElement | null>(null);
+  useScrollProgress(progressRef);
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Sluit het mobiele menu met Escape of zodra we naar desktop schalen.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth > 980) setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
 
   const copyEmail = async () => {
     try {
@@ -400,10 +463,7 @@ export default function App() {
       <Styles />
 
       {/* scroll progress */}
-      <div
-        className="progress"
-        style={{ transform: `scaleX(${progress / 100})` }}
-      />
+      <div className="progress" ref={progressRef} style={{ transform: "scaleX(0)" }} />
 
       {/* atmosphere */}
       <div className="bg" aria-hidden="true">
@@ -429,6 +489,7 @@ export default function App() {
                 key={n.id}
                 href={`#${n.id}`}
                 className={active === n.id ? "active" : ""}
+                aria-current={active === n.id ? "page" : undefined}
               >
                 {n.label}
               </a>
@@ -729,7 +790,7 @@ export default function App() {
                     {copied ? "Gekopieerd!" : "Kopieer e-mail"}
                   </button>
                   <a
-                    href="https://www.linkedin.com"
+                    href={LINKEDIN}
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-ghost"
@@ -785,7 +846,6 @@ export default function App() {
 function Styles() {
   return (
     <style>{`
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
 .bs-root{
   --ink:#070A12;
   --ink-2:#0B1020;
@@ -880,8 +940,10 @@ function Styles() {
   color:var(--text);width:42px;height:42px;border-radius:12px;cursor:pointer;
   align-items:center;justify-content:center;}
 .mobile-menu{display:none;flex-direction:column;gap:4px;padding:0 24px;
-  max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;}
-.mobile-menu.open{max-height:420px;padding:8px 24px 22px;}
+  max-height:0;overflow:hidden;visibility:hidden;
+  transition:max-height .35s ease,padding .35s ease,visibility 0s linear .35s;}
+.mobile-menu.open{max-height:420px;padding:8px 24px 22px;visibility:visible;
+  transition:max-height .35s ease,padding .35s ease,visibility 0s;}
 .mobile-menu a{padding:13px 4px;color:var(--muted);font-weight:500;
   border-bottom:1px solid var(--line);}
 .mobile-menu a:last-child{border:none;margin-top:10px;}
