@@ -909,6 +909,7 @@ function Styles() {
 .hero-stats div{border-left:1px solid var(--line);padding-left:14px;}
 .hero-stats dt{color:var(--muted);font-size:13px;margin-bottom:6px;}
 .hero-stats dd{margin:0;font-family:'Space Grotesk';font-weight:700;font-size:22px;}
+.hero-copy,.hero-panel{min-width:0;}
 
 /* hero panel */
 .hero-panel{display:flex;flex-direction:column;gap:16px;}
@@ -1069,6 +1070,14 @@ function Styles() {
   .tl-period{padding-top:0;}
   .contact-meta{border-left:none;border-top:1px solid var(--line);}
   .meta-email{text-align:left;}
+
+  /* hero passend maken */
+  .hero-title{font-size:clamp(30px,8.5vw,42px);}
+  .hero-lead{font-size:15.5px;}
+  .term-body{font-size:11.5px;white-space:pre-wrap;word-break:break-word;}
+  .hero-actions .btn{flex:1 1 100%;justify-content:center;}
+  .hero-stats dt{font-size:12px;}
+  .hero-stats dd{font-size:17px;}
 }
 
 @media(prefers-reduced-motion:reduce){
